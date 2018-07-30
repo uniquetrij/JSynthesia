@@ -28,9 +28,15 @@ public class Swar {
     private final int index;
     private Swar taar;
     private Swar mandra;
+    private Double intensity;
+
+    private Swar(int note, double intensity) {
+        this.index = note;
+        this.intensity = intensity;
+    }
 
     private Swar(int note) {
-        this.index = note;
+        this(note, 1);
     }
 
     /**
@@ -40,7 +46,7 @@ public class Swar {
      */
     public Swar taar() {
         if (taar == null) {
-            taar = new Swar(index + 12);
+            taar = new Swar(index + 12, intensity);
         }
         return taar;
     }
@@ -52,17 +58,25 @@ public class Swar {
      */
     public Swar mandra() {
         if (mandra == null) {
-            mandra = new Swar(index - 12);
+            mandra = new Swar(index - 12, intensity);
         }
         return mandra;
     }
 
+    public Swar newIntensity(double intensity) {
+        return new Swar(index, intensity);
+    }
+
+    public double getIntensity() {
+        return intensity;
+    }
+
     public Swar next() {
-        return new Swar(index + 1);
+        return new Swar(index + 1, intensity);
     }
 
     public Swar previous() {
-        return new Swar(index - 1);
+        return new Swar(index - 1, intensity);
     }
 
     public int toMIDInoteNumber(Saptak saptak) {

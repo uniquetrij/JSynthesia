@@ -6,6 +6,7 @@
 package com.uniquesoft.musicsequencer;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  *
@@ -14,58 +15,91 @@ import java.util.ArrayList;
 public class Notes {
 
     public static Matra[] toMatraArray(String notes) {
-        String[] splits = notes.replace("\n", " ").split(" ");
+        String[] splits = notes.split("\\|");
+//        System.out.println(Arrays.toString(splits));
         ArrayList<Matra> list = new ArrayList<>();
         for (String split : splits) {
-            list.add(getMatra(split));
+            Matra m = getMatra(split);
+            list.add(m);
         }
 
-        return list.toArray(new Matra[0]);
+//        for (Matra m1 : list) {
+//            for (int i = 0; i < m1.length(); i++) {
+//                try {
+//                    System.out.println("----------------" + m1.get(i).toMIDInoteNumber(new Saptak()));
+//                    System.out.println("----------------" + m1.get(i).getIntensity());
+//                } catch (Exception e) {
+//
+//                }
+//            }
+//        }
 
+        return list.toArray(new Matra[0]);
     }
 
     public static Matra getMatra(String notes) {
         ArrayList<Swar> sequence = new ArrayList<>();
-        notes += "  ";
-        char note1;
-        char note2;
-        char note3;
-        for (int i = 0; i < notes.length() - 2; i++) {
-            note1 = notes.charAt(i);
-            note2 = notes.charAt(i + 1);
-            note3 = notes.charAt(i + 2);
+        String[] splits = notes.split(" ");
+//        System.out.println(Arrays.toString(splits));
+        for (String split : splits) {
+            if (split.isEmpty()) {
+                continue;
+            }
+            Character _1 = split.charAt(0);
+            Character _2 = split.length() > 1 ? split.charAt(1) : '\0';
+            Character _3 = split.length() > 2 ? split.charAt(2) : '\0';
+            Character _4 = split.length() > 3 ? split.charAt(3) : '\0';
             Character note = null;
             Boolean sharp = Boolean.FALSE;
             Integer octave = 0;
-            switch (note1) {
+            Double intensity = 1.0;
+            switch (_1) {
                 case '+':
                     octave = 1;
-                    note = note2;
-                    i++;
+                    note = _2;
                     break;
                 case '-':
-                    octave = 1;
-                    note = note2;
-                    i++;
+                    octave = -1;
+                    note = _2;
                     break;
                 default:
-                    note = note1;
+                    note = _1;
             }
-            if (note2 == '#') {
+            if (_2 == '#') {
                 sharp = Boolean.TRUE;
-                i++;
             }
-            if (note3 == '#') {
-                sharp = Boolean.TRUE;
-                i++;
-            }
+            try {
+                intensity = intensity * Integer.parseInt(_2 + "") / 10.0 + 0.1;
+//                System.out.println("ERR2");
+            } catch (Exception ex) {
 
-            sequence.add(getSwar(note, sharp, octave));
+            }
+            if (_3 == '#') {
+                sharp = Boolean.TRUE;
+            }
+            try {
+                intensity = intensity * Integer.parseInt(_3 + "") / 10.0 + 0.1;
+//                System.out.println("ERR3");
+            } catch (Exception ex) {
+
+            }
+            try {
+                intensity = intensity * Integer.parseInt(_4 + "") / 10.0 + 0.1;
+//                System.out.println("ERR4");
+            } catch (Exception ex) {
+
+            }
+//            System.out.println(intensity);
+            Swar swar = getSwar(note, sharp, octave, intensity);
+//            if (swar != null) {
+//                System.out.println(swar.getIntensity());
+//            }
+            sequence.add(swar);
         }
         return new Matra(sequence.toArray(new Swar[0]));
     }
 
-    public static Swar getSwar(Character note, Boolean sharp, Integer octave) {
+    public static Swar getSwar(Character note, Boolean sharp, Integer octave, Double intensity) {
         Swar swar = null;
         switch (note) {
             case 'C':
@@ -103,7 +137,7 @@ public class Notes {
         while (octave++ < 0) {
             swar = swar.mandra();
         }
-
+        swar = swar.newIntensity(intensity);
         return swar;
 
     }

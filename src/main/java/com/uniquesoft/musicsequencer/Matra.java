@@ -16,7 +16,7 @@ public class Matra
 
     public Matra(Swar... sequence)
     {
-        this.sequence = sequence.clone();
+        this.sequence = sequence;
     }
 
     /**
